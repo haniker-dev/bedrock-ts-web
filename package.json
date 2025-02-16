@@ -1,0 +1,51 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite serve --mode dev",
+    "tsc": "tsc --noEmit",
+    "tsc:watch": "tsc --noEmit --watch",
+    "lint": "esw ./ --ext .ts --ext .tsx --max-warnings=0",
+    "lint:watch": "esw ./ --ext .ts --ext .tsx --watch",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "build": "vite build",
+    "staging:deploy": "./devops/deploy.sh staging",
+    "production:deploy": "./devops/deploy.sh production"
+  },
+  "author": "Haniker",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion/css": "^11.13.5",
+    "date-fns": "^4.1.0",
+    "decoders": "^2.6.0",
+    "normalize.css": "^8.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "teki": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.2",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-boundaries": "^5.0.1",
+    "eslint-plugin-custom": "file:../core/eslint-plugin-custom",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jam3": "^0.2.3",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-watch": "^8.0.0",
+    "prettier": "^3.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5"
+  }
+}
