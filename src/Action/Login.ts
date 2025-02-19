@@ -1,26 +1,15 @@
 import { Action, cmd, perform } from "../Action"
-import { _LoginState } from "../State/Login"
+import { _LoginState, LoginState } from "../State/Login"
 import * as LoginApi from "../Api/Public/Login"
 import * as LogoutApi from "../Api/Auth/Logout"
 import * as RD from "../../../core/Data/RemoteData"
 import * as AuthToken from "../Data/AuthToken"
-import { createEmailE } from "../../../core/Data/User/Email"
-import { createPasswordE } from "../../../core/App/User/Password"
-import { navigateTo } from "./Route"
-import { toRoute } from "../Route"
+import { navigateTo, toRoute } from "../Route"
 import { initAuthState, initState } from "../State/init"
 
-export type Field = "Email" | "Password"
-
-export function onChange(field: Field, value: string): Action {
+export function onChangeState(fields: Partial<LoginState>): Action {
   return (state) => {
-    return [
-      _LoginState(state, {
-        email: field === "Email" ? value : state.login.email,
-        password: field === "Password" ? value : state.login.password,
-      }),
-      cmd(),
-    ]
+    return [_LoginState(state, fields), cmd()]
   }
 }
 
@@ -36,39 +25,11 @@ function onLogout(): Action {
   }
 }
 
-export function onSubmit(): Action {
+export function onSubmit(params: LoginApi.BodyParams): Action {
   return (state) => {
-    const emailM = createEmailE(state.login.email)
-    if (emailM._t === "Left") {
-      return [
-        _LoginState(state, {
-          formError: emailM.error,
-        }),
-        cmd(),
-      ]
-    }
-
-    const passwordM = createPasswordE(state.login.password)
-    if (passwordM._t === "Left") {
-      return [
-        _LoginState(state, {
-          formError: passwordM.error,
-        }),
-        cmd(),
-      ]
-    }
-
     return [
-      _LoginState(state, {
-        formError: null,
-        loginResponse: RD.loading(),
-      }),
-      cmd(
-        LoginApi.call({
-          email: emailM.value,
-          password: passwordM.value,
-        }).then(onSubmitResponse),
-      ),
+      _LoginState(state, { loginResponse: RD.loading() }),
+      cmd(LoginApi.call(params).then(onSubmitResponse)),
     ]
   }
 }
@@ -84,17 +45,19 @@ function onSubmitResponse(response: LoginApi.Response): Action {
       ]
     }
 
+    const { user, accessToken, refreshToken } = response.value
+
     AuthToken.set({
-      userID: response.value.user.id,
-      accessToken: response.value.accessToken,
-      refreshToken: response.value.refreshToken,
+      userID: user.id,
+      accessToken,
+      refreshToken,
     })
 
     return [
-      _LoginState(initAuthState(response.value.user, state), {
+      _LoginState(initAuthState(user, state), {
         loginResponse: RD.success(response.value),
       }),
-      cmd(perform(navigateTo(toRoute("Profile", {})))),
+      cmd(perform(navigateTo(toRoute("Home", {})))),
     ]
   }
 }

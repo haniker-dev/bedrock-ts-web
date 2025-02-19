@@ -10,6 +10,7 @@ const key: unique symbol = Symbol()
 export type ImageLocalSrc = Opaque<string, typeof key>
 
 export const localImage = {
+  logo: _create("/assets/favicon.ico"),
   circleLoading: _create("/assets/images/circle-loading.svg"),
 }
 

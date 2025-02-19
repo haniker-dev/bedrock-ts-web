@@ -2,6 +2,7 @@ import { User } from "../../core/App/User"
 import { LoginState } from "./State/Login"
 import { Route } from "./Route"
 import { Cmd } from "./Action"
+import { UpdateProfileState } from "./State/UpdateProfile"
 
 export type State = PublicState | AuthState
 
@@ -14,6 +15,7 @@ export type PublicState = {
 export type AuthState = Omit<PublicState, "_t"> & {
   _t: "Auth"
   profile: User
+  updateProfile: UpdateProfileState
 }
 
 // Lenses

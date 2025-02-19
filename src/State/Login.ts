@@ -1,25 +1,25 @@
 import * as LoginApi from "../../../core/Api/Public/Login"
-import { ErrorPassword } from "../../../core/App/User/Password"
-import { Maybe } from "../../../core/Data/Maybe"
+import {
+  createPasswordE,
+  ErrorPassword,
+  Password,
+} from "../../../core/App/User/Password"
+import * as FieldString from "../../../core/Data/Form/FieldString"
 import * as RD from "../../../core/Data/RemoteData"
-import { ErrorEmail } from "../../../core/Data/User/Email"
+import { createEmailE, Email, ErrorEmail } from "../../../core/Data/User/Email"
 import { ApiError } from "../Api"
 import type { State } from "../State"
 
 export type LoginState = {
-  email: string
-  password: string
-  formError: Maybe<FormError>
+  email: FieldString.FieldString<ErrorEmail, Email>
+  password: FieldString.FieldString<ErrorPassword, Password>
   loginResponse: RD.RemoteData<ApiError<LoginApi.ErrorCode>, LoginApi.Payload>
 }
 
-export type FormError = ErrorEmail | ErrorPassword
-
 export function initLoginState(): LoginState {
   return {
-    email: "",
-    password: "",
-    formError: null,
+    email: FieldString.init("", createEmailE),
+    password: FieldString.init("", createPasswordE),
     loginResponse: RD.notAsked(),
   }
 }

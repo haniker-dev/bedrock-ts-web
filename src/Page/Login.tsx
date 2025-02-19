@@ -1,96 +1,184 @@
 import { JSX } from "react"
 import { css } from "@emotion/css"
 import { State } from "../State"
-import { font } from "../View/Theme"
+import { color, font, theme, bp } from "../View/Theme"
 import { emit } from "../Runtime/React"
 import { RemoteData } from "../../../core/Data/RemoteData"
 import { ApiError } from "../Api"
 import * as LoginApi from "../Api/Public/Login"
-import * as LoginState from "../State/Login"
 import * as LoginAction from "../Action/Login"
-import { Maybe } from "../../../core/Data/Maybe"
+import * as FieldString from "../../../core/Data/Form/FieldString"
+import InputText from "../View/Form/InputText"
+import { gradient } from "../View/Theme/Keyframe"
+import Button from "../View/Form/Button"
+import { LoginState } from "../State/Login"
+import { Maybe, nothing } from "../../../core/Data/Maybe"
 
 export type Props = { state: State }
 export default function LoginPage(props: Props): JSX.Element {
-  const { formError, loginResponse } = props.state.login
+  const { email, password, loginResponse } = props.state.login
+  const loginParams = toLoginParams(props.state.login)
+  const isSubmitting = loginResponse._t === "Loading"
 
   return (
     <div className={styles.container}>
-      <div className={styles.pageTitle}>Login Page</div>
+      <div className={styles.wrapper}>
+        <div className={styles.pageTitle}>Login</div>
 
-      {errorMessage(formError, loginResponse)}
+        {responseMessage(loginResponse)}
 
-      <form
-        className={styles.form}
-        onSubmit={(e) => {
-          e.preventDefault()
-          emit(LoginAction.onSubmit())
-        }}
-      >
-        <input
-          type="email"
-          placeholder="Enter Email"
-          onChange={(e) => emit(LoginAction.onChange("Email", e.target.value))}
-        />
-        <input
-          type="password"
-          placeholder="Enter Password"
-          onChange={(e) =>
-            emit(LoginAction.onChange("Password", e.target.value))
-          }
-        />
-        <button type="submit">Login</button>
-      </form>
+        <form
+          className={styles.form}
+          onSubmit={(e) => {
+            e.preventDefault()
+            if (isSubmitting == false && loginParams != null) {
+              emit(LoginAction.onSubmit(loginParams))
+            }
+          }}
+        >
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>Email</span>
+            <InputText
+              value={email.unwrap()}
+              invalid={FieldString.error(email) != null}
+              type="email"
+              placeholder="Enter email"
+              onChange={(value) =>
+                emit(
+                  LoginAction.onChangeState({
+                    email: FieldString.changeAndParse(value, email),
+                  }),
+                )
+              }
+            />
+          </div>
+          <div className={styles.field}>
+            <span className={styles.fieldLabel}>Password</span>
+            <InputText
+              value={password.unwrap()}
+              invalid={FieldString.error(password) != null}
+              type="password"
+              placeholder="Enter password"
+              onChange={(value) =>
+                emit(
+                  LoginAction.onChangeState({
+                    password: FieldString.changeAndParse(value, password),
+                  }),
+                )
+              }
+            />
+          </div>
+          <Button
+            theme_={"Red"}
+            size={"M"}
+            label={isSubmitting ? "Submitting..." : "Submit"}
+            onClick={() => {
+              if (isSubmitting == false && loginParams != null) {
+                emit(LoginAction.onSubmit(loginParams))
+              }
+            }}
+            disabled={isSubmitting === true || loginParams == null}
+          />
+        </form>
+      </div>
     </div>
   )
 }
 
-function errorMessage(
-  formError: Maybe<LoginState.FormError>,
+function responseMessage(
   response: RemoteData<ApiError<LoginApi.ErrorCode>, LoginApi.Payload>,
 ): JSX.Element {
-  if (formError != null) {
-    switch (formError) {
-      case "INVALID_EMAIL":
-        return <p>Invalid Email</p>
-      case "INVALID_LENGTH":
-      case "MISSING_NUMBER":
-      case "MISSING_SYMBOL":
-      case "CONTAINS_SPACE":
-        return (
-          <p>
-            Password must be at least 8 chars with no spaces and include 1
-            symbol and 1 number
-          </p>
-        )
-    }
-  }
   switch (response._t) {
     case "NotAsked":
       return <></>
     case "Loading":
-      return <p>Logging you in...</p>
+      return <div className={styles.responseLoading}>Logging you in...</div>
     case "Failure":
-      return <p>{LoginApi.errorString(response.error)}</p>
+      return (
+        <div className={styles.responseError}>
+          {LoginApi.errorString(response.error)}
+        </div>
+      )
     case "Success":
-      return <p>Login Success! Redirecting you now...</p>
+      return (
+        <div className={styles.responseSuccess}>
+          Login Success! Redirecting you now...
+        </div>
+      )
   }
+}
+
+function toLoginParams(loginState: LoginState): Maybe<LoginApi.BodyParams> {
+  const { email, password } = loginState
+  const emailM = FieldString.value(email)
+  const passwordM = FieldString.value(password)
+
+  return emailM == null || passwordM == null
+    ? nothing()
+    : { email: emailM, password: passwordM }
 }
 
 const styles = {
   container: css({
+    width: "100dvw",
+    height: "100dvh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "stretch",
+    background: `linear-gradient(-45deg, ${color.secondary400}, ${color.secondary100}, ${color.secondary400})`,
+    backgroundSize: `400% 400%`,
+    animation: `${gradient} 10s ease infinite`,
+    ...bp.sm({
+      alignItems: "center",
+    }),
+  }),
+  wrapper: css({
+    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    gap: theme.s4,
+    padding: `${theme.s0} ${theme.s6}`,
+    background: color.secondary50,
+    ...bp.sm({
+      height: "auto",
+      padding: `${theme.s12} ${theme.s20}`,
+      borderRadius: theme.s4,
+      border: `${theme.s0_25} solid ${color.secondary100}`,
+      boxShadow: theme.elevation.large,
+    }),
   }),
   pageTitle: css({
     ...font.regularH1_42,
+  }),
+  responseError: css({
+    ...font.medium14,
+    color: color.semantics.error.red500,
+  }),
+  responseLoading: css({
+    ...font.medium14,
+    color: color.neutral600,
+  }),
+  responseSuccess: css({
+    ...font.medium14,
+    color: color.semantics.success.green500,
   }),
   form: css({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
+    gap: theme.s4,
+  }),
+  field: css({
+    minWidth: theme.s82,
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.s1,
+  }),
+  fieldLabel: css({
+    ...font.regular14,
   }),
 }

@@ -3,6 +3,7 @@ import { AuthState, State } from "../State"
 import * as AuthToken from "../Data/AuthToken"
 import { initLoginState } from "./Login"
 import { User } from "../../../core/App/User"
+import { initUpdateProfileState } from "./UpdateProfile"
 
 export function initState(route: Route): State {
   const token = AuthToken.get()
@@ -17,6 +18,7 @@ export function initAuthState(profile: User, state: State): AuthState {
   return {
     ...state,
     _t: "Auth",
+    updateProfile: initUpdateProfileState(profile),
     profile,
   }
 }

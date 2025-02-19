@@ -2,12 +2,39 @@ import * as JD from "decoders"
 import * as Teki from "teki"
 import { UrlRecord } from "../../core/Data/UrlToken"
 import { Maybe, maybeDecoder } from "../../core/Data/Maybe"
+import type { Action } from "./Action"
+import type { State } from "./State"
+
+/**
+ * Navigate to a Route
+ * WARN This should be the only function used for navigation
+ * If you try to use window.history.pushState directly,
+ * onUrlChange will not be triggered
+ */
+export function navigateTo(route: Route): Action {
+  return (state: State) => {
+    return [
+      state,
+      [
+        Promise.resolve().then(() => {
+          // NOTE window.dispatchEvent is synchronous
+          // Hence, this is wrapped in a promise
+          // NOTE history.pushState does not trigger popstate event
+          // so we are triggering it manually (See Subscription.ts)
+          window.history.pushState(null, "", toPath(route))
+          window.dispatchEvent(new PopStateEvent("popstate"))
+          return null
+        }),
+      ],
+    ]
+  }
+}
 
 /**
  * Use `toRoute` to create a Route
  * Use `toPath` to convert a Route into a path eg. `/login?redirect=null`
  * Use `parseRoute` to convert a full url into a Route
- * Use `src/Action/Route#navigateTo` to navigate to a Route
+ * Use `navigateTo` to navigate to a Route
  * Use `src/Action/Route#onUrlChange` to add effects on url change
  *
  * WARN Defining a Route:

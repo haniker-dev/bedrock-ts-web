@@ -30,7 +30,6 @@ export function startReactRuntime(
   }
   const root = createRoot(rootElement)
   function render(state: State): void {
-    // TODO What is this sharedState = state
     // React does batch rendering instead of rendering synchronously
     // Hence we force React to render synchronously here on every state update
     flushSync(() => {
