@@ -31,6 +31,15 @@ export function navigateTo(route: Route): Action {
 }
 
 /**
+ * history.back() will trigger onUrlChange
+ */
+export function goBack(): Action {
+  return (state: State) => {
+    return [state, [Promise.resolve(history.back()).then(() => null)]]
+  }
+}
+
+/**
  * Use `toRoute` to create a Route
  * Use `toPath` to convert a Route into a path eg. `/login?redirect=null`
  * Use `parseRoute` to convert a full url into a Route

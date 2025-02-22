@@ -15,3 +15,5 @@ export const theme = {
   color,
   font,
 }
+
+export const layoutSize = { maxWidth: 1140 }

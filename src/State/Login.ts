@@ -5,6 +5,7 @@ import {
   Password,
 } from "../../../core/App/User/Password"
 import * as FieldString from "../../../core/Data/Form/FieldString"
+import { Maybe, nothing } from "../../../core/Data/Maybe"
 import * as RD from "../../../core/Data/RemoteData"
 import { createEmailE, Email, ErrorEmail } from "../../../core/Data/User/Email"
 import { ApiError } from "../Api"
@@ -26,4 +27,16 @@ export function initLoginState(): LoginState {
 
 export function _LoginState(state: State, login: Partial<LoginState>): State {
   return { ...state, login: { ...state.login, ...login } }
+}
+
+export function parseNotValidate(
+  loginState: LoginState,
+): Maybe<LoginApi.BodyParams> {
+  const { email, password } = loginState
+  const emailM = FieldString.value(email)
+  const passwordM = FieldString.value(password)
+
+  return emailM == null || passwordM == null
+    ? nothing()
+    : { email: emailM, password: passwordM }
 }

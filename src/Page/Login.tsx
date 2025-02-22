@@ -11,13 +11,12 @@ import * as FieldString from "../../../core/Data/Form/FieldString"
 import InputText from "../View/Form/InputText"
 import { gradient } from "../View/Theme/Keyframe"
 import Button from "../View/Form/Button"
-import { LoginState } from "../State/Login"
-import { Maybe, nothing } from "../../../core/Data/Maybe"
+import { parseNotValidate } from "../State/Login"
 
 export type Props = { state: State }
 export default function LoginPage(props: Props): JSX.Element {
   const { email, password, loginResponse } = props.state.login
-  const loginParams = toLoginParams(props.state.login)
+  const loginParams = parseNotValidate(props.state.login)
   const isSubmitting = loginResponse._t === "Loading"
 
   return (
@@ -43,13 +42,7 @@ export default function LoginPage(props: Props): JSX.Element {
               invalid={FieldString.error(email) != null}
               type="email"
               placeholder="Enter email"
-              onChange={(value) =>
-                emit(
-                  LoginAction.onChangeState({
-                    email: FieldString.changeAndParse(value, email),
-                  }),
-                )
-              }
+              onChange={(value) => emit(LoginAction.onChangeEmail(value))}
             />
           </div>
           <div className={styles.field}>
@@ -59,13 +52,7 @@ export default function LoginPage(props: Props): JSX.Element {
               invalid={FieldString.error(password) != null}
               type="password"
               placeholder="Enter password"
-              onChange={(value) =>
-                emit(
-                  LoginAction.onChangeState({
-                    password: FieldString.changeAndParse(value, password),
-                  }),
-                )
-              }
+              onChange={(value) => emit(LoginAction.onChangePassword(value))}
             />
           </div>
           <Button
@@ -106,16 +93,6 @@ function responseMessage(
         </div>
       )
   }
-}
-
-function toLoginParams(loginState: LoginState): Maybe<LoginApi.BodyParams> {
-  const { email, password } = loginState
-  const emailM = FieldString.value(email)
-  const passwordM = FieldString.value(password)
-
-  return emailM == null || passwordM == null
-    ? nothing()
-    : { email: emailM, password: passwordM }
 }
 
 const styles = {

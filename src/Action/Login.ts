@@ -1,15 +1,32 @@
 import { Action, cmd, perform } from "../Action"
-import { _LoginState, LoginState } from "../State/Login"
+import { _LoginState } from "../State/Login"
 import * as LoginApi from "../Api/Public/Login"
 import * as LogoutApi from "../Api/Auth/Logout"
 import * as RD from "../../../core/Data/RemoteData"
 import * as AuthToken from "../Data/AuthToken"
 import { navigateTo, toRoute } from "../Route"
 import { initAuthState, initState } from "../State/init"
+import * as FieldString from "../../../core/Data/Form/FieldString"
 
-export function onChangeState(fields: Partial<LoginState>): Action {
+export function onChangeEmail(value: string): Action {
   return (state) => {
-    return [_LoginState(state, fields), cmd()]
+    const { email } = state.login
+    return [
+      _LoginState(state, { email: FieldString.changeAndParse(value, email) }),
+      cmd(),
+    ]
+  }
+}
+
+export function onChangePassword(value: string): Action {
+  return (state) => {
+    const { password } = state.login
+    return [
+      _LoginState(state, {
+        password: FieldString.changeAndParse(value, password),
+      }),
+      cmd(),
+    ]
   }
 }
 

@@ -1,15 +1,73 @@
 import { Action, cmd } from "../Action"
-import { _UpdateProfileState, UpdateProfileState } from "../State/UpdateProfile"
+import { _UpdateProfileState } from "../State/UpdateProfile"
 import * as FieldString from "../../../core/Data/Form/FieldString"
 import * as UpdateProfileApi from "../Api/Auth/UpdateProfile"
 import * as RD from "../../../core/Data/RemoteData"
 import { _AuthState, AuthState } from "../State"
 import { createPasswordE } from "../../../core/App/User/Password"
 
-export function onChangeState(fields: Partial<UpdateProfileState>): Action {
+export function onChangeName(value: string): Action {
   return (state) =>
     _AuthState((authState: AuthState) => {
-      return [_UpdateProfileState(authState, fields), cmd()]
+      const { name } = authState.updateProfile
+      return [
+        _UpdateProfileState(authState, {
+          name: FieldString.changeAndParse(value, name),
+        }),
+        cmd(),
+      ]
+    }, state)
+}
+
+export function onChangeEmail(value: string): Action {
+  return (state) =>
+    _AuthState((authState: AuthState) => {
+      const { email } = authState.updateProfile
+      return [
+        _UpdateProfileState(authState, {
+          email: FieldString.changeAndParse(value, email),
+        }),
+        cmd(),
+      ]
+    }, state)
+}
+
+export function onChangeCurrentPassword(value: string): Action {
+  return (state) =>
+    _AuthState((authState: AuthState) => {
+      const { currentPassword } = authState.updateProfile
+      return [
+        _UpdateProfileState(authState, {
+          currentPassword: FieldString.changeAndParse(value, currentPassword),
+        }),
+        cmd(),
+      ]
+    }, state)
+}
+
+export function onChangeNewPassword(value: string): Action {
+  return (state) =>
+    _AuthState((authState: AuthState) => {
+      const { newPassword } = authState.updateProfile
+      return [
+        _UpdateProfileState(authState, {
+          newPassword: FieldString.changeAndParse(value, newPassword),
+        }),
+        cmd(),
+      ]
+    }, state)
+}
+
+export function onChangeConfirmPassword(value: string): Action {
+  return (state) =>
+    _AuthState((authState: AuthState) => {
+      const { confirmPassword } = authState.updateProfile
+      return [
+        _UpdateProfileState(authState, {
+          confirmPassword: FieldString.changeAndParse(value, confirmPassword),
+        }),
+        cmd(),
+      ]
     }, state)
 }
 

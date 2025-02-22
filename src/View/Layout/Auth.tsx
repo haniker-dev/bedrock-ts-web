@@ -2,7 +2,7 @@ import { css } from "@emotion/css"
 import { AuthState } from "../../State"
 import { JSX } from "react"
 import Header from "./Auth/Header"
-import { theme } from "../Theme"
+import { theme, layoutSize } from "../Theme"
 
 type Props = { authState: AuthState; Page: React.FC<{ authState: AuthState }> }
 export function AuthLayout(props: Props): JSX.Element {
@@ -24,7 +24,6 @@ export function AuthLayout(props: Props): JSX.Element {
   )
 }
 
-const maxDesktopWidth = 1140
 const styles = {
   container: css({
     width: "100dvw",
@@ -40,7 +39,7 @@ const styles = {
   }),
   headerWrap: css({
     width: "100%",
-    maxWidth: maxDesktopWidth,
+    maxWidth: layoutSize.maxWidth,
   }),
   body: css({
     height: "100%",
@@ -51,6 +50,6 @@ const styles = {
   }),
   bodyWrap: css({
     width: "100%",
-    maxWidth: maxDesktopWidth,
+    maxWidth: layoutSize.maxWidth,
   }),
 }

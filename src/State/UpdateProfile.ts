@@ -7,6 +7,7 @@ import {
   Password,
 } from "../../../core/App/User/Password"
 import * as FieldString from "../../../core/Data/Form/FieldString"
+import { Maybe, nothing } from "../../../core/Data/Maybe"
 import * as RD from "../../../core/Data/RemoteData"
 import { createEmailE, Email, ErrorEmail } from "../../../core/Data/User/Email"
 import { ApiError } from "../Api"
@@ -46,5 +47,40 @@ export function _UpdateProfileState(
   return {
     ...authState,
     updateProfile: { ...authState.updateProfile, ...updateProfile },
+  }
+}
+
+export function parseNotValidate(
+  updateProfileState: UpdateProfileState,
+): Maybe<UpdateProfileApi.BodyParams> {
+  const { name, email, newPassword, confirmPassword, currentPassword } =
+    updateProfileState
+  const nameM = FieldString.value(name)
+  const emailM = FieldString.value(email)
+  const currentPasswordM = FieldString.value(currentPassword)
+  const newPasswordM = FieldString.value(newPassword)
+  const confirmPasswordM = FieldString.value(confirmPassword)
+
+  if (nameM == null || emailM == null || currentPasswordM == null) {
+    return nothing()
+  }
+
+  const params: UpdateProfileApi.BodyParams = {
+    name: nameM,
+    email: emailM,
+    currentPassword: currentPasswordM,
+    newPassword: nothing(),
+  }
+
+  const newPasswordStr = newPassword.unwrap()
+  const confirmPasswordStr = confirmPassword.unwrap()
+  if (newPasswordStr !== "" || confirmPasswordStr !== "") {
+    return newPasswordM == null ||
+      confirmPasswordM == null ||
+      newPasswordM.unwrap() !== confirmPasswordM.unwrap()
+      ? nothing()
+      : { ...params, newPassword: newPasswordM }
+  } else {
+    return params
   }
 }

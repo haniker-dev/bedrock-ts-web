@@ -2,11 +2,12 @@ import { css } from "@emotion/css"
 import { AuthState } from "../../../State"
 import { JSX } from "react"
 import { localImage } from "../../ImageLocalSrc"
-import { navigate } from "../../Link"
+import Link from "../../Link"
 import { toRoute } from "../../../Route"
 import { color, font, theme } from "../../Theme"
 import { emit } from "../../../Runtime/React"
 import * as LoginAction from "../../../Action/Login"
+import { nothing } from "../../../../../core/Data/Maybe"
 
 type Props = { authState: AuthState }
 export default function (props: Props): JSX.Element {
@@ -14,15 +15,15 @@ export default function (props: Props): JSX.Element {
 
   return (
     <div className={styles.container}>
-      <a
-        {...navigate(toRoute("Home", {}))}
+      <Link
+        route={toRoute("Home", {})}
         className={styles.logo}
       >
         <img src={localImage.logo.unwrap()} />
-      </a>
+      </Link>
       <div className={styles.menuItems}>
-        <a
-          {...navigate(toRoute("Home", {}))}
+        <Link
+          route={toRoute("Home", {})}
           className={
             authState.route._t === "Home"
               ? styles.menuItemActive
@@ -30,9 +31,9 @@ export default function (props: Props): JSX.Element {
           }
         >
           Home
-        </a>
-        <a
-          {...navigate(toRoute("Profile", {}))}
+        </Link>
+        <Link
+          route={toRoute("Profile", {})}
           className={
             authState.route._t === "Profile"
               ? styles.menuItemActive
@@ -40,13 +41,14 @@ export default function (props: Props): JSX.Element {
           }
         >
           Profile
-        </a>
-        <button
+        </Link>
+        <Link
+          route={toRoute("Login", { redirect: nothing() })}
           onClick={() => emit(LoginAction.logout())}
           className={styles.menuItem}
         >
           Logout
-        </button>
+        </Link>
       </div>
     </div>
   )

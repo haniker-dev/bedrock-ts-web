@@ -10,8 +10,7 @@ import { emit } from "../Runtime/React"
 import * as FieldString from "../../../core/Data/Form/FieldString"
 import InputText from "../View/Form/InputText"
 import Button from "../View/Form/Button"
-import { UpdateProfileState } from "../State/UpdateProfile"
-import { Maybe, nothing } from "../../../core/Data/Maybe"
+import { parseNotValidate } from "../State/UpdateProfile"
 
 export type Props = { authState: AuthState }
 export default function ProfilePage(props: Props): JSX.Element {
@@ -24,7 +23,7 @@ export default function ProfilePage(props: Props): JSX.Element {
     currentPassword,
     updateResponse,
   } = updateProfile
-  const updateProfileParams = toUpdateProfileParams(updateProfile)
+  const updateProfileParams = parseNotValidate(updateProfile)
   const isSubmitting = updateResponse._t === "Loading"
 
   return (
@@ -50,11 +49,7 @@ export default function ProfilePage(props: Props): JSX.Element {
                 changed={name.unwrap() !== profile.name.unwrap()}
                 placeholder="Enter name"
                 onChange={(value) =>
-                  emit(
-                    UpdateProfileAction.onChangeState({
-                      name: FieldString.changeAndParse(value, name),
-                    }),
-                  )
+                  emit(UpdateProfileAction.onChangeName(value))
                 }
               />
             </div>
@@ -67,11 +62,7 @@ export default function ProfilePage(props: Props): JSX.Element {
                 type="email"
                 placeholder="Enter email"
                 onChange={(value) =>
-                  emit(
-                    UpdateProfileAction.onChangeState({
-                      email: FieldString.changeAndParse(value, email),
-                    }),
-                  )
+                  emit(UpdateProfileAction.onChangeEmail(value))
                 }
               />
             </div>
@@ -89,14 +80,7 @@ export default function ProfilePage(props: Props): JSX.Element {
                 type="password"
                 placeholder="Enter password"
                 onChange={(value) =>
-                  emit(
-                    UpdateProfileAction.onChangeState({
-                      newPassword: FieldString.changeAndParse(
-                        value,
-                        newPassword,
-                      ),
-                    }),
-                  )
+                  emit(UpdateProfileAction.onChangeNewPassword(value))
                 }
               />
             </div>
@@ -113,14 +97,7 @@ export default function ProfilePage(props: Props): JSX.Element {
                 type="password"
                 placeholder="Enter confirmation password"
                 onChange={(value) =>
-                  emit(
-                    UpdateProfileAction.onChangeState({
-                      confirmPassword: FieldString.changeAndParse(
-                        value,
-                        confirmPassword,
-                      ),
-                    }),
-                  )
+                  emit(UpdateProfileAction.onChangeConfirmPassword(value))
                 }
               />
             </div>
@@ -135,14 +112,7 @@ export default function ProfilePage(props: Props): JSX.Element {
             type="password"
             placeholder="Enter password"
             onChange={(value) =>
-              emit(
-                UpdateProfileAction.onChangeState({
-                  currentPassword: FieldString.changeAndParse(
-                    value,
-                    currentPassword,
-                  ),
-                }),
-              )
+              emit(UpdateProfileAction.onChangeCurrentPassword(value))
             }
           />
         </div>
@@ -190,41 +160,6 @@ function responseMessage(
           Profile updated successfully!
         </div>
       )
-  }
-}
-
-function toUpdateProfileParams(
-  updateProfileState: UpdateProfileState,
-): Maybe<UpdateProfileApi.BodyParams> {
-  const { name, email, newPassword, confirmPassword, currentPassword } =
-    updateProfileState
-  const nameM = FieldString.value(name)
-  const emailM = FieldString.value(email)
-  const currentPasswordM = FieldString.value(currentPassword)
-  const newPasswordM = FieldString.value(newPassword)
-  const confirmPasswordM = FieldString.value(confirmPassword)
-
-  if (nameM == null || emailM == null || currentPasswordM == null) {
-    return nothing()
-  }
-
-  const params: UpdateProfileApi.BodyParams = {
-    name: nameM,
-    email: emailM,
-    currentPassword: currentPasswordM,
-    newPassword: nothing(),
-  }
-
-  const newPasswordStr = newPassword.unwrap()
-  const confirmPasswordStr = confirmPassword.unwrap()
-  if (newPasswordStr !== "" || confirmPasswordStr !== "") {
-    return newPasswordM == null ||
-      confirmPasswordM == null ||
-      newPasswordM.unwrap() !== confirmPasswordM.unwrap()
-      ? nothing()
-      : { ...params, newPassword: newPasswordM }
-  } else {
-    return params
   }
 }
 

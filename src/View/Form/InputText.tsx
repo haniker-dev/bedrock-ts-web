@@ -10,7 +10,7 @@ type Props = {
   disabled?: boolean
   invalid?: boolean
   changed?: boolean
-  type?: React.HTMLInputTypeAttribute
+  type?: "text" | "password" | "email" | "number" | "tel" | "url"
 }
 function View({
   value,

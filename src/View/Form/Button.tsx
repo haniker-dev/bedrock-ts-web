@@ -76,6 +76,7 @@ function labelFont(size: Props["size"]) {
 
 function labelColor(theme_: Props["theme_"], disabled: boolean) {
   if (disabled) return { color: color.neutral200 }
+
   switch (theme_) {
     case "Blue":
       return { color: color.neutral0 }
