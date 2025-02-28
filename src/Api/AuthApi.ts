@@ -4,7 +4,7 @@ import * as Logger from "../Logger"
 import { HttpStatus, Method } from "../../../core/Data/Api"
 import { AuthApi, AuthResponseJson } from "../../../core/Data/Api/Auth"
 import { toStringRecord, UrlRecord } from "../../../core/Data/UrlToken"
-import { fetchM, FetchResult } from "../Data/Fetch"
+import { fetchE, FetchResult } from "../Data/Fetch"
 import { left, right } from "../../../core/Data/Either"
 import { Maybe } from "../../../core/Data/Maybe"
 import { requestNewAccessToken } from "../Api/Public/RefreshToken"
@@ -40,7 +40,7 @@ export async function authApi<
     return left("UNAUTHORISED")
   }
 
-  return fetchM(makePath(path), {
+  return fetchE(makePath(path), {
     method,
     headers: jsonHeaders(authHeader),
     body: isNoBodyMethod(method) ? undefined : JSON.stringify(bodyData),

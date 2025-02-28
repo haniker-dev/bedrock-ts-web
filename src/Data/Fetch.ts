@@ -5,7 +5,7 @@ export type FetchError = "NETWORK_ERROR"
 export type FetchData = { httpStatus: number; data: unknown }
 export type FetchResult = Either<FetchError, FetchData>
 
-export async function fetchM(
+export async function fetchE(
   url: string,
   options: RequestInit,
 ): Promise<FetchResult> {
