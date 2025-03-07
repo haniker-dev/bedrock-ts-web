@@ -1,7 +1,7 @@
 import { Action, cmd, Cmd } from "../Action"
 import * as ProfileApi from "../Api/Auth/Profile"
 import { State } from "../State"
-import * as AuthToken from "../Data/AuthToken"
+import * as AuthToken from "../App/AuthToken"
 import { onUrlChange } from "./Route"
 import { initAuthState } from "../State/init"
 

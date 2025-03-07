@@ -3,7 +3,7 @@ import { Either, left, right } from "../../../../core/Data/Either"
 import { Nat900 } from "../../../../core/Data/Number/Nat"
 import * as Queue from "../../../../core/Data/Queue/AggregateQueue"
 import { expiringWithin } from "../../../../core/Data/Security/JsonWebToken"
-import * as AuthToken from "../../Data/AuthToken"
+import * as AuthToken from "../../App/AuthToken"
 import { publicApi } from "../PublicApi"
 
 /**

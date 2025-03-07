@@ -5,7 +5,7 @@ import {
   Password,
 } from "../../../core/App/User/Password"
 import * as FieldString from "../../../core/Data/Form/FieldString"
-import { Maybe, nothing } from "../../../core/Data/Maybe"
+import { Maybe } from "../../../core/Data/Maybe"
 import * as RD from "../../../core/Data/RemoteData"
 import { createEmailE, Email, ErrorEmail } from "../../../core/Data/User/Email"
 import { ApiError } from "../Api"
@@ -37,6 +37,6 @@ export function parseNotValidate(
   const passwordM = FieldString.value(password)
 
   return emailM == null || passwordM == null
-    ? nothing()
+    ? null
     : { email: emailM, password: passwordM }
 }

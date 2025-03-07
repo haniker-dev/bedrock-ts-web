@@ -7,7 +7,6 @@ import { toRoute } from "../../../Route"
 import { color, font, theme } from "../../Theme"
 import { emit } from "../../../Runtime/React"
 import * as LoginAction from "../../../Action/Login"
-import { nothing } from "../../../../../core/Data/Maybe"
 
 type Props = { authState: AuthState }
 export default function (props: Props): JSX.Element {
@@ -43,7 +42,7 @@ export default function (props: Props): JSX.Element {
           Profile
         </Link>
         <Link
-          route={toRoute("Login", { redirect: nothing() })}
+          route={toRoute("Login", { redirect: null })}
           onClick={() => emit(LoginAction.logout())}
           className={styles.menuItem}
         >

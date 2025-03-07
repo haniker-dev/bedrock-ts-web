@@ -1,6 +1,6 @@
 import { Route } from "../Route"
 import { AuthState, State } from "../State"
-import * as AuthToken from "../Data/AuthToken"
+import * as AuthToken from "../App/AuthToken"
 import { initLoginState } from "./Login"
 import { User } from "../../../core/App/User"
 import { initUpdateProfileState } from "./UpdateProfile"

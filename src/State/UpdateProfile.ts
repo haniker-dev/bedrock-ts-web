@@ -7,7 +7,7 @@ import {
   Password,
 } from "../../../core/App/User/Password"
 import * as FieldString from "../../../core/Data/Form/FieldString"
-import { Maybe, nothing } from "../../../core/Data/Maybe"
+import { Maybe } from "../../../core/Data/Maybe"
 import * as RD from "../../../core/Data/RemoteData"
 import { createEmailE, Email, ErrorEmail } from "../../../core/Data/User/Email"
 import { ApiError } from "../Api"
@@ -62,14 +62,14 @@ export function parseNotValidate(
   const confirmPasswordM = FieldString.value(confirmPassword)
 
   if (nameM == null || emailM == null || currentPasswordM == null) {
-    return nothing()
+    return null
   }
 
   const params: UpdateProfileApi.BodyParams = {
     name: nameM,
     email: emailM,
     currentPassword: currentPasswordM,
-    newPassword: nothing(),
+    newPassword: null,
   }
 
   const newPasswordStr = newPassword.unwrap()
@@ -78,7 +78,7 @@ export function parseNotValidate(
     return newPasswordM == null ||
       confirmPasswordM == null ||
       newPasswordM.unwrap() !== confirmPasswordM.unwrap()
-      ? nothing()
+      ? null
       : { ...params, newPassword: newPasswordM }
   } else {
     return params

@@ -1,10 +1,12 @@
 import { Action, cmd } from "../Action"
-import { _UpdateProfileState } from "../State/UpdateProfile"
+import {
+  _UpdateProfileState,
+  initUpdateProfileState,
+} from "../State/UpdateProfile"
 import * as FieldString from "../../../core/Data/Form/FieldString"
 import * as UpdateProfileApi from "../Api/Auth/UpdateProfile"
 import * as RD from "../../../core/Data/RemoteData"
 import { _AuthState, AuthState } from "../State"
-import { createPasswordE } from "../../../core/App/User/Password"
 
 export function onChangeName(value: string): Action {
   return (state) =>
@@ -98,10 +100,8 @@ function onSubmitResponse(response: UpdateProfileApi.Response): Action {
         _UpdateProfileState(
           { ...authState, profile: user },
           {
+            ...initUpdateProfileState(user),
             updateResponse: RD.success(response.value),
-            newPassword: FieldString.init("", createPasswordE),
-            confirmPassword: FieldString.init("", createPasswordE),
-            currentPassword: FieldString.init("", createPasswordE),
           },
         ),
         cmd(),
