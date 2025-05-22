@@ -136,6 +136,8 @@ export function toRoute<K extends keyof RouteTable>(
   const routeDef = router[routeT]
   // We can guarantee this won't throw
   // based on our type definitions
+  // TODO _serializeParams can return a number value
+  // which make route decoder throw and dev need to decode for both
   return routeDef.decoder.verify({
     _t: routeT,
     path: routeDef.path,
